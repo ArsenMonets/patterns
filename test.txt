@@ -1,0 +1,5 @@
+[USERS]
+admin,admin,Seller
+[PRODUCTS]
+Milk,20.0
+[ORDERS]
