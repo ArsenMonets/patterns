@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Products - Store Management System</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #f5f5f5; }
+        header { background: #333; color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
+        nav a { color: white; margin-left: 20px; text-decoration: none; }
+        nav a:hover { text-decoration: underline; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        h1 { color: #333; margin-bottom: 20px; }
+        .success { color: #155724; background: #d4edda; padding: 10px; border-radius: 4px; margin-bottom: 15px; }
+        .form-section { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; color: #333; font-weight: bold; }
+        input { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; }
+        input:focus { outline: none; border-color: #007bff; }
+        .btn { display: inline-block; padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        .btn:hover { background: #0056b3; }
+        .btn-danger { background: #dc3545; }
+        .btn-danger:hover { background: #c82333; }
+        table { width: 100%; border-collapse: collapse; background: white; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background: #f5f5f5; font-weight: bold; }
+        .btn-nav { display: inline-block; padding: 10px 20px; background: #6c757d; color: white; text-decoration: none; border-radius: 4px; margin-right: 10px; }
+        .btn-nav:hover { background: #5a6268; }
+    </style>
+</head>
+<body>
+    <header>
+        <h2>Admin Panel - Products</h2>
+        <nav>
+            <a href="/admin/orders">Orders</a>
+            <a href="/admin/products">Products</a>
+            <a href="/logout">Logout</a>
+        </nav>
+    </header>
+    <div class="container">
+        <h1>Manage Inventory</h1>
+        ${success ? '<div class="success">Operation completed successfully!</div>' : ''}
+        
+        <div class="form-section">
+            <h2>Add New Product</h2>
+            <form method="post" action="/admin/add-product">
+                <div class="form-group">
+                    <label for="name">Product Name:</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="price">Price:</label>
+                    <input type="number" id="price" name="price" step="0.01" required>
+                </div>
+                <button type="submit" class="btn">Add Product</button>
+            </form>
+        </div>
+
+        <h2>Current Products</h2>
+        <table>
+            <tr>
+                <th>Product Name</th>
+                <th>Price</th>
+                <th>Action</th>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>

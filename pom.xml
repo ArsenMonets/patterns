@@ -25,6 +25,26 @@
       <version>4.13.2</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <version>2.1.214</version>
+    </dependency>
+    <dependency>
+      <groupId>io.javalin</groupId>
+      <artifactId>javalin</artifactId>
+      <version>5.6.3</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <version>2.0.7</version>
+    </dependency>
+    <dependency>
+      <groupId>org.mindrot</groupId>
+      <artifactId>jbcrypt</artifactId>
+      <version>0.4</version>
+    </dependency>
   </dependencies>
 
   <build>

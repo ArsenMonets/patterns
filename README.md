@@ -10,6 +10,27 @@ This project is a simple console-based store management system written in Java. 
 - Inventory management and order confirmation for sellers
 - Data persistence to a text file
 
+## Architecture
+- **StoreManager**: Repository layer - handles all data access operations through DAOs
+- **StoreService**: Service layer with business logic - enforces role-based access control and application workflows
+- **AuthService**: Authentication service - handles user login and registration with password hashing
+- **StoreController**: Web controller layer (Javalin) - handles HTTP requests/responses and MVC routing
+- **DAOs**: Data Access Objects - provide interfaces for database operations
+- **DatabaseConnection**: Singleton pattern - manages single database connection instance
+- **Views**: HTML templates rendered server-side with variables
+
+## MVC Architecture
+The application follows the Model-View-Controller (MVC) pattern:
+- **Model**: User, Product, Order classes managed through DAOs
+- **View**: HTML templates served by Javalin with variable substitution
+- **Controller**: StoreController handles routing and business logic dispatch to StoreService
+
+## Security Features
+- Password hashing using BCrypt (12 rounds) for secure user authentication
+- Role-based access control (Customer/Seller) enforced at service layer
+- Session management for user authentication
+- Form-based login/registration with validation
+
 ## How to Run
 1. Make sure you have Java (version 21 or higher) and Maven installed.
 2. Open a terminal in the project directory.
@@ -19,8 +40,9 @@ This project is a simple console-based store management system written in Java. 
     ```
 4. Run the application:
     ```bash
-    java -cp target/umlproject-1.0-SNAPSHOT.jar com.github.arsenmonets.ConsoleUI
+    java -cp target/umlproject-1.0-SNAPSHOT.jar com.github.arsenmonets.Application
     ```
+5. Open your browser and navigate to `http://localhost:8080`
 
 **UML Diagrams**
 
@@ -76,80 +98,177 @@ graph LR
 ```mermaid
 classDiagram
     class User {
-        +String username
-        +String password
-        +String role
+        -String username
+        -String password
+        -String role
         +User(String, String, String)
-        +toString()
+        +getUsername() String
+        +setUsername(String) void
+        +getPassword() String
+        +setPassword(String) void
+        +getRole() String
+        +setRole(String) void
+        +toString() String
     }
 
     class Product {
-        +String name
-        +double price
+        -String name
+        -double price
         +Product(String, double)
-        +toString()
+        +getName() String
+        +setName(String) void
+        +getPrice() double
+        +setPrice(double) void
+        +toString() String
     }
 
     class Order {
-        +int id
-        +String customerName
-        +String status
-        +List~Product~ products
+        -int id
+        -String customerName
+        -String status
+        -List~Product~ products
         +Order(int, String, List~Product~, String)
-        +toString()
+        +getId() int
+        +setId(int) void
+        +getCustomerName() String
+        +setCustomerName(String) void
+        +getStatus() String
+        +setStatus(String) void
+        +getProducts() List
+        +setProducts(List) void
+        +toString() String
     }
 
-    class DataStorage {
-        -String filePath
-        +DataStorage(String)
-        +void saveAll(List~User~, List~Product~, List~Order~)
-        +Map~String, List<?>~ loadAll()
+    class DatabaseConnection {
+        -static DatabaseConnection instance
+        -Connection connection
+        -DatabaseConnection()
+        +static getInstance() DatabaseConnection
+        +getConnection() Connection
+        +closeConnection() void
+    }
+
+    class UserDAO {
+        <<interface>>
+        +save(User) boolean
+        +findByUsername(String) User
+        +findAll() List
+        +update(User) boolean
+        +delete(String) boolean
+    }
+
+    class ProductDAO {
+        <<interface>>
+        +save(Product) boolean
+        +findByName(String) Product
+        +findAll() List
+        +update(Product) boolean
+        +delete(String) boolean
+    }
+
+    class OrderDAO {
+        <<interface>>
+        +save(Order) boolean
+        +findById(int) Order
+        +findAll() List
+        +findByCustomer(String) List
+        +update(Order) boolean
+        +delete(int) boolean
+    }
+
+    class UserDAOImpl {
+        -Connection connection
+        +UserDAOImpl()
+        +save(User) boolean
+        +findByUsername(String) User
+        +findAll() List
+        +update(User) boolean
+        +delete(String) boolean
+    }
+
+    class ProductDAOImpl {
+        -Connection connection
+        +ProductDAOImpl()
+        +save(Product) boolean
+        +findByName(String) Product
+        +findAll() List
+        +update(Product) boolean
+        +delete(String) boolean
+    }
+
+    class OrderDAOImpl {
+        -Connection connection
+        +OrderDAOImpl()
+        +save(Order) boolean
+        +findById(int) Order
+        +findAll() List
+        +findByCustomer(String) List
+        +update(Order) boolean
+        +delete(int) boolean
     }
 
     class StoreManager {
-        -List~User~ users
-        -List~Product~ catalog
-        -List~Order~ orders
-        -DataStorage storage
+        -UserDAO userDAO
+        -ProductDAO productDAO
+        -OrderDAO orderDAO
         -int orderCounter
-        +StoreManager(DataStorage)
-        +List~Product~ getProducts()
-        +List~Order~ getOrders()
-        +void addOrder(Order)
-        +void updateOrderStatus(int, String)
-        +List~User~ getUsers()
-        +void addProduct(Product)
+        +StoreManager(UserDAO, ProductDAO, OrderDAO)
+        +getProducts() List
+        +getOrders() List
+        +getOrdersByCustomer(String) List
+        +addOrder(Order) void
+        +updateOrderStatus(int, String) void
+        +getUsers() List
+        +addProduct(Product) void
+        +updateProduct(Product) void
+        +deleteProduct(String) void
+        +getOrderById(int) Order
+    }
+
+    class StoreService {
+        -StoreManager storeManager
+        +StoreService(StoreManager)
+        +browseProducts() List
+        +findProductByName(String) Product
+        +customerCheckout(User, Order) void
+        +customerViewMyOrders(User) List
+        +sellerViewAllOrders(User) List
+        +sellerConfirmOrder(User, int) void
+        +sellerAddProduct(User, Product) void
+        +sellerUpdateProduct(User, Product) void
+        +sellerDeleteProduct(User, String) void
+        +sellerManageInventory(User, List) void
     }
 
     class AuthService {
-        -List~User~ users
-        +AuthService(List~User~)
-        +User login(String, String)
-        +boolean register(String, String, String)
+        -UserDAO userDAO
+        +AuthService(UserDAO)
+        +login(String, String) User
+        +register(String, String, String) boolean
     }
 
-    class ConsoleUI {
-        -StoreManager manager
-        -AuthService auth
-        -Scanner sc
-        -User currentUser
-        +ConsoleUI(StoreManager, AuthService)
-        +void mainLoop()
-        +void customerMenu()
-        +void sellerMenu()
-    }
+    DatabaseConnection "1" -- "1" UserDAOImpl : provides connection
+    DatabaseConnection "1" -- "1" ProductDAOImpl : provides connection
+    DatabaseConnection "1" -- "1" OrderDAOImpl : provides connection
 
-    StoreManager o-- User
-    StoreManager *-- Product
-    StoreManager *-- Order
-    StoreManager <-- DataStorage
+    UserDAO <|.. UserDAOImpl
+    ProductDAO <|.. ProductDAOImpl
+    OrderDAO <|.. OrderDAOImpl
+
+    UserDAO --> User
+    ProductDAO --> Product
+    OrderDAO --> Order
+
+    StoreManager o-- UserDAO
+    StoreManager o-- ProductDAO
+    StoreManager o-- OrderDAO
+
+    StoreService --> StoreManager
+    StoreService --> User
 
     Order o-- Product
 
-    AuthService o-- User
-
-    ConsoleUI <-- StoreManager
-    ConsoleUI <-- AuthService
+    AuthService o-- UserDAO
 ```
 
 
@@ -158,47 +277,53 @@ classDiagram
 **Scenario Descriptions:**
 
 - **Customer scenario:**
-    1. Customer selects "Buy Items" in the UI.
-    2. The UI creates a new order and sends it to the StoreManager.
-    3. StoreManager saves all data via DataStorage.
-    4. DataStorage confirms saving to the UI.
-    5. UI notifies the customer that the order is pending confirmation.
+    1. Customer initiates a purchase via the application.
+    2. The application creates a new order and sends it to the StoreManager.
+    3. StoreManager saves the order via OrderDAOImpl.
+    4. OrderDAOImpl persists data to the H2 database.
+    5. Application notifies the customer that the order is pending confirmation.
 
 - **Seller scenario:**
-    1. Seller opens the "Admin Panel" in the UI.
-    2. UI requests the list of orders from StoreManager.
-    3. StoreManager returns the list to the UI.
-    4. Seller selects an order to confirm.
-    5. UI updates the order status via StoreManager.
-    6. StoreManager saves all data via DataStorage.
-    7. DataStorage confirms update to the UI.
-    8. UI notifies the seller that the order is confirmed.
+    1. Seller initiates order confirmation via the application.
+    2. Application requests the list of orders from StoreManager.
+    3. StoreManager retrieves orders via OrderDAOImpl.
+    4. OrderDAOImpl fetches data from the H2 database.
+    5. Seller selects an order to confirm.
+    6. Application updates the order status via StoreManager.
+    7. StoreManager updates the order via OrderDAOImpl.
+    8. OrderDAOImpl persists the update to the H2 database.
+    9. Application notifies the seller that the order is confirmed.
+
 ```mermaid
-%% Updated Sequence Diagram
 sequenceDiagram
     autonumber
     actor Customer
-    participant UI as ConsoleUI
     participant SM as StoreManager
-    participant DS as DataStorage
+    participant DAO as OrderDAOImpl
+    participant DB as H2 Database
     actor Seller
 
-    Note over Customer, DS: Customer Action
-    Customer->>UI: Select "Buy Items"
-    UI->>SM: addOrder(newOrder)
-    SM->>DS: saveAll()
-    DS-->>UI: Saved to text file
-    UI-->>Customer: "Order pending confirmation"
+    Note over Customer, DB: Customer Action
+    Customer->>SM: addOrder(newOrder)
+    SM->>DAO: save(order)
+    DAO->>DB: INSERT order data
+    DB-->>DAO: Order saved
+    DAO-->>SM: true
+    SM-->>Customer: Order pending confirmation
 
-    Note over Seller, DS: Seller Action
-    Seller->>UI: Open "Admin Panel"
-    UI->>SM: getOrders()
-    SM-->>UI: List of Orders
-    Seller->>UI: Confirm Order #ID
-    UI->>SM: updateOrderStatus(ID, "Paid")
-    SM->>DS: saveAll()
-    DS-->>UI: Data Updated
-    UI-->>Seller: "Order confirmed!"
+    Note over Seller, DB: Seller Action
+    Seller->>SM: getOrders()
+    SM->>DAO: findAll()
+    DAO->>DB: SELECT all orders
+    DB-->>DAO: Order list
+    DAO-->>SM: List of Orders
+    SM-->>Seller: Display orders
+    Seller->>SM: updateOrderStatus(ID, "Paid")
+    SM->>DAO: update(order)
+    DAO->>DB: UPDATE order status
+    DB-->>DAO: Status updated
+    DAO-->>SM: true
+    SM-->>Seller: Order confirmed!
 ```
 
 ## StoreManagerTest: Test Descriptions

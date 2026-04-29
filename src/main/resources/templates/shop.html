@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Shop - Store Management System</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #f5f5f5; }
+        header { background: #333; color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
+        nav a { color: white; margin-left: 20px; text-decoration: none; }
+        nav a:hover { text-decoration: underline; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        h1 { color: #333; margin-bottom: 20px; }
+        .products { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        .product-card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        .product-card h3 { color: #333; margin-bottom: 10px; }
+        .product-price { font-size: 20px; color: #007bff; font-weight: bold; margin-bottom: 15px; }
+        .btn { display: inline-block; padding: 10px 20px; background: #007bff; color: white; text-decoration: none; border-radius: 4px; border: none; cursor: pointer; }
+        .btn:hover { background: #0056b3; }
+        .btn-cart { background: #28a745; }
+        .btn-cart:hover { background: #218838; }
+    </style>
+</head>
+<body>
+    <header>
+        <h2>Store</h2>
+        <nav>
+            <a href="/shop">Shop</a>
+            <a href="/cart">Cart</a>
+            <a href="/my-orders">My Orders</a>
+            <a href="/logout">Logout</a>
+        </nav>
+    </header>
+    <div class="container">
+        <h1>Browse Products</h1>
+        <div class="products">
+            <p>Loading products...</p>
+        </div>
+    </div>
+</body>
+</html>
