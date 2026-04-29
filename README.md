@@ -121,22 +121,7 @@ public class UserDAOImpl implements UserDAO {
 }
 ```
 
-#### 3. **Strategy Pattern** (Behavioral)
-- **Classes**: `AuthService` and `StoreService` with different authentication and business logic strategies
-- **Purpose**: Encapsulates different algorithms (login strategy, checkout strategy, product management strategy) into separate objects
-- **Implementation**: Service classes implement different strategies for handling user requests based on role and context
-- **Benefits**: Runtime behavior switching, easy to add new strategies without modifying existing code
-
-```java
-public class StoreService {
-    // Different strategies for different roles and operations
-    public void customerCheckout(User user, Order order) { /* customer checkout logic */ }
-    public void sellerConfirmOrder(User user, int orderId) { /* seller order confirmation */ }
-    public void sellerAddProduct(User user, Product product) { /* seller inventory management */ }
-}
-```
-
-#### 4. **Template Method Pattern** (Behavioral)
+#### 3. **Template Method Pattern** (Behavioral)
 - **Class**: `TemplateRenderer`
 - **Purpose**: Defines skeleton of template rendering process; concrete steps can be redefined by subclasses or methods
 - **Implementation**: `render()` method defines steps: load template → process foreach loops → replace variables
@@ -153,19 +138,19 @@ public class TemplateRenderer {
 }
 ```
 
-#### 5. **MVC (Model-View-Controller) Pattern** (Architectural)
+#### 4. **MVC (Model-View-Controller) Pattern** (Architectural)
 - **Model**: `User`, `Product`, `Order` classes managed via DAOs
 - **View**: HTML templates (`home.html`, `shop.html`, `cart.html`, `my-orders.html`, `admin-*.html`)
 - **Controller**: `StoreController` routes requests and delegates to services
 - **Benefits**: Clear separation of presentation, business logic, and data layers
 
-#### 6. **Facade Pattern** (Structural)
+#### 5. **Facade Pattern** (Structural)
 - **Class**: `StoreService` (Service Layer)
 - **Purpose**: Provides simplified unified interface to complex subsystems (multiple DAOs, authentication)
 - **Implementation**: Single service class coordinates UserDAO, ProductDAO, OrderDAO, and AuthService
 - **Benefits**: Hides complexity, provides clean API for controllers
 
-#### 7. **Decorator Pattern** (Structural)
+#### 6. **Decorator Pattern** (Structural)
 - **Class**: `RouteHandler`
 - **Purpose**: Dynamically adds behavior (authentication, error handling, template rendering) to request handlers without modifying original handler code
 - **Implementation**: Wraps handler functions with `handle()` and `handleAuthenticated()` methods that add cross-cutting concerns
@@ -1045,7 +1030,6 @@ mvn package -DskipTests
 | **DAO** | *DAOImpl | Structural | Database abstraction layer |
 | **Facade** | StoreRepository, StoreService | Structural | Simplified unified interface |
 | **Decorator** | RouteHandler | Structural | Add authentication, error handling, rendering to handlers |
-| **Strategy** | AuthService, StoreService | Behavioral | Encapsulate algorithms by role/use case |
 | **Template Method** | TemplateRenderer | Behavioral | Define rendering skeleton steps |
 | **MVC** | StoreController, TemplateRenderer, Models | Architectural | Separation of concerns |
 | **Factory** | DAOImpl constructors | Creational | Create DAO instances with database connection |
