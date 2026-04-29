@@ -33,7 +33,16 @@
     <div class="container">
         <h1>Browse Products</h1>
         <div class="products">
-            <p>Loading products...</p>
+            #foreach(product in products)
+            <div class="product-card">
+                <h3>${product.name}</h3>
+                <div class="product-price">$${product.price}</div>
+                <form method="post" action="/add-to-cart">
+                    <input type="hidden" name="product_id" value="${product.id}">
+                    <button type="submit" class="btn btn-cart">Add to Cart</button>
+                </form>
+            </div>
+            #end
         </div>
     </div>
 </body>

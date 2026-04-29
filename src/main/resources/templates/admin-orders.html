@@ -42,6 +42,28 @@
                 <th>Products</th>
                 <th>Action</th>
             </tr>
+            #foreach(order in orders)
+            <tr>
+                <td>${order.id}</td>
+                <td>${order.customerName}</td>
+                <td>
+                    #if(${order.status} == "PENDING")
+                    <span class="status-pending">PENDING</span>
+                    #else
+                    <span class="status-confirmed">CONFIRMED</span>
+                    #end
+                </td>
+                <td>${order.productCount} product(s)</td>
+                <td>
+                    #if(${order.status} == "PENDING")
+                    <form method="post" action="/confirm-order" style="display:inline">
+                        <input type="hidden" name="order_id" value="${order.id}">
+                        <button type="submit" class="btn">Confirm</button>
+                    </form>
+                    #end
+                </td>
+            </tr>
+            #end
         </table>
     </div>
 </body>

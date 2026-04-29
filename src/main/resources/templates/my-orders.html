@@ -38,6 +38,19 @@
                 <th>Status</th>
                 <th>Products</th>
             </tr>
+            #foreach(order in orders)
+            <tr>
+                <td>${order.id}</td>
+                <td class="status-${order.status}">
+                    #if(${order.status} == "PENDING")
+                    <span class="status-pending">PENDING</span>
+                    #else
+                    <span class="status-confirmed">CONFIRMED</span>
+                    #end
+                </td>
+                <td>${order.productCount} product(s)</td>
+            </tr>
+            #end
         </table>
         <br>
         <a href="/shop" class="btn-secondary">Continue Shopping</a>
