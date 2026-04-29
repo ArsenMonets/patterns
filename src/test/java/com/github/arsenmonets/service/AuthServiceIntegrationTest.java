@@ -1,21 +1,21 @@
 package com.github.arsenmonets.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import com.github.arsenmonets.dao.impl.UserDAOImpl;
 import com.github.arsenmonets.models.User;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
 
-import static org.junit.Assert.*;
-
-@RunWith(JUnit4.class)
 public class AuthServiceIntegrationTest {
 
     private AuthService authService;
     private UserDAOImpl userDAO;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         userDAO = new UserDAOImpl();
         authService = new AuthService(userDAO);

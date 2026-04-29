@@ -7,17 +7,18 @@ import com.github.arsenmonets.repository.StoreRepository;
 import com.github.arsenmonets.models.User;
 import com.github.arsenmonets.models.Product;
 import com.github.arsenmonets.models.Order;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-@RunWith(JUnit4.class)
 public class StoreServiceIntegrationTest {
 
     private StoreService storeService;
@@ -26,11 +27,22 @@ public class StoreServiceIntegrationTest {
     private OrderDAOImpl orderDAO;
     private UserDAOImpl userDAO;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         productDAO = new ProductDAOImpl();
         orderDAO = new OrderDAOImpl();
         userDAO = new UserDAOImpl();
+
+        List<Product> existingProducts = productDAO.findAll();
+        for (Product p : existingProducts) {
+            productDAO.delete(p.getName());
+        }
+
+        List<Order> existingOrders = orderDAO.findAll();
+        for (Order o : existingOrders) {
+            orderDAO.delete(o.getId());
+        }
+
         storeRepository = new StoreRepository(userDAO, productDAO, orderDAO);
         storeService = new StoreService(storeRepository);
 

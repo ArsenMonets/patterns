@@ -50,6 +50,9 @@ public class StoreService {
     }
 
     public double calculateCartTotal(List<Product> cart) {
+        if (cart == null) {
+            return 0;
+        }
         return cart.stream().mapToDouble(Product::getPrice).sum();
     }
 
