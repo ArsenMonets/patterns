@@ -1032,7 +1032,6 @@ mvn package -DskipTests
 | **Decorator** | RouteHandler | Structural | Add authentication, error handling, rendering to handlers |
 | **Template Method** | TemplateRenderer | Behavioral | Define rendering skeleton steps |
 | **MVC** | StoreController, TemplateRenderer, Models | Architectural | Separation of concerns |
-| **Factory** | DAOImpl constructors | Creational | Create DAO instances with database connection |
 | **Repository** | StoreRepository | Structural | Abstraction over data source |
 
 ## SOLID Principles Application
