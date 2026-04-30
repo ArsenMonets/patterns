@@ -52,9 +52,9 @@ src/
 └── test/
     ├── AuthServiceTest.java (Unit tests)
     ├── StoreServiceTest.java (Unit tests)
+    ├── TemplateRendererTest.java (Unit tests)
     ├── AuthServiceIntegrationTest.java (Integration tests)
-    ├── StoreServiceIntegrationTest.java (Integration tests)
-    └── TempateRenderTest.java (Unit tests)
+    └── StoreServiceIntegrationTest.java (Integration tests)
 ```
 
 ## Architecture Overview
@@ -258,11 +258,12 @@ java -cp target/umlproject-1.0-SNAPSHOT.jar com.github.arsenmonets.Application
 
 ## Testing
 
-The project includes comprehensive test coverage with **116 test cases**:
+The project includes comprehensive test coverage with **152 test cases**:
 
-### Unit Tests (70 tests)
+### Unit Tests (106 tests)
 - **AuthServiceTest** (30 tests): Login/register validation, password handling, edge cases
 - **StoreServiceTest** (40 tests): Cart operations, checkout flow, inventory management, role-based access
+- **TemplateRendererTest** (36 tests): Template rendering, variable binding, loops, ternary operators, edge cases
 
 ### Integration Tests (46 tests)
 - **AuthServiceIntegrationTest** (11 tests): Real database authentication workflows
