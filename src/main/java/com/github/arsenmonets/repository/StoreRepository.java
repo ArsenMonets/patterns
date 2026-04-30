@@ -25,6 +25,10 @@ public class StoreRepository {
         return productDAO.findAll();
     }
 
+    public Product getProductById(int id) {
+        return productDAO.findById(id);
+    }
+
     public List<Order> getOrders() {
         return orderDAO.findAll();
     }

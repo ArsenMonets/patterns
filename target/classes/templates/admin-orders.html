@@ -33,7 +33,7 @@
     </header>
     <div class="container">
         <h1>Pending Orders</h1>
-        ${success ? '<div class="success">Order confirmed successfully!</div>' : ''}
+        ${success}
         <table>
             <tr>
                 <th>Order ID</th>
@@ -46,21 +46,13 @@
             <tr>
                 <td>${order.id}</td>
                 <td>${order.customerName}</td>
-                <td>
-                    #if(${order.status} == "PENDING")
-                    <span class="status-pending">PENDING</span>
-                    #else
-                    <span class="status-confirmed">CONFIRMED</span>
-                    #end
-                </td>
+                <td>${order.status}</td>
                 <td>${order.productCount} product(s)</td>
                 <td>
-                    #if(${order.status} == "PENDING")
                     <form method="post" action="/confirm-order" style="display:inline">
                         <input type="hidden" name="order_id" value="${order.id}">
                         <button type="submit" class="btn">Confirm</button>
                     </form>
-                    #end
                 </td>
             </tr>
             #end

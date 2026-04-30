@@ -31,6 +31,14 @@ public class StoreService {
                 .orElse(null);
     }
 
+    public Product findProductById(int id) {
+        List<Product> products = storeRepository.getProducts();
+        return products.stream()
+                .filter(p -> p.getId() == id)
+                .findFirst()
+                .orElse(null);
+    }
+
     public void addToCart(User user, String productName) {
         if (user == null) {
             throw new IllegalAccessError("User must be logged in");
@@ -38,6 +46,17 @@ public class StoreService {
         Product product = findProductByName(productName);
         if (product == null) {
             throw new IllegalArgumentException("Product not found: " + productName);
+        }
+        userCarts.computeIfAbsent(user.getUsername(), k -> new ArrayList<>()).add(product);
+    }
+
+    public void addToCartByProductId(User user, int productId) {
+        if (user == null) {
+            throw new IllegalAccessError("User must be logged in");
+        }
+        Product product = findProductById(productId);
+        if (product == null) {
+            throw new IllegalArgumentException("Product not found with id: " + productId);
         }
         userCarts.computeIfAbsent(user.getUsername(), k -> new ArrayList<>()).add(product);
     }

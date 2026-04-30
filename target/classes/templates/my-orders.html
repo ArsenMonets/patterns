@@ -31,7 +31,7 @@
     </header>
     <div class="container">
         <h1>Your Orders</h1>
-        ${success ? '<div class="success">Order placed successfully!</div>' : ''}
+        ${success}
         <table>
             <tr>
                 <th>Order ID</th>
@@ -41,13 +41,7 @@
             #foreach(order in orders)
             <tr>
                 <td>${order.id}</td>
-                <td class="status-${order.status}">
-                    #if(${order.status} == "PENDING")
-                    <span class="status-pending">PENDING</span>
-                    #else
-                    <span class="status-confirmed">CONFIRMED</span>
-                    #end
-                </td>
+                <td>${order.status}</td>
                 <td>${order.productCount} product(s)</td>
             </tr>
             #end

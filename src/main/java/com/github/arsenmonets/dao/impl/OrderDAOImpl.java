@@ -26,9 +26,9 @@ public class OrderDAOImpl implements OrderDAO {
         String orderItemsSql = "CREATE TABLE IF NOT EXISTS order_items (" +
                 "id INT AUTO_INCREMENT PRIMARY KEY, " +
                 "order_id INT NOT NULL, " +
-                "product_name VARCHAR(100) NOT NULL, " +
-                "price DOUBLE NOT NULL, " +
-                "FOREIGN KEY (order_id) REFERENCES orders(id))";
+                "product_id INT NOT NULL, " +
+                "FOREIGN KEY (order_id) REFERENCES orders(id), " +
+                "FOREIGN KEY (product_id) REFERENCES products(id))";
 
         try (Statement stmt = connection.createStatement()) {
             stmt.execute(ordersSql);
@@ -57,13 +57,12 @@ public class OrderDAOImpl implements OrderDAO {
     }
 
     private void saveOrderItems(Order order) {
-        String sql = "INSERT INTO order_items (order_id, product_name, price) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO order_items (order_id, product_id) VALUES (?, ?)";
 
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             for (Product product : order.getProducts()) {
                 pstmt.setInt(1, order.getId());
-                pstmt.setString(2, product.getName());
-                pstmt.setDouble(3, product.getPrice());
+                pstmt.setInt(2, product.getId());
                 pstmt.executeUpdate();
             }
         } catch (SQLException e) {
@@ -178,7 +177,9 @@ public class OrderDAOImpl implements OrderDAO {
 
     private List<Product> getOrderProducts(int orderId) {
         List<Product> products = new ArrayList<>();
-        String sql = "SELECT product_name, price FROM order_items WHERE order_id = ?";
+        String sql = "SELECT p.id, p.name, p.price FROM order_items oi " +
+                "JOIN products p ON oi.product_id = p.id " +
+                "WHERE oi.order_id = ?";
 
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setInt(1, orderId);
@@ -186,7 +187,8 @@ public class OrderDAOImpl implements OrderDAO {
 
             while (rs.next()) {
                 products.add(new Product(
-                        rs.getString("product_name"),
+                        rs.getInt("id"),
+                        rs.getString("name"),
                         rs.getDouble("price")));
             }
         } catch (SQLException e) {

@@ -14,7 +14,7 @@ public class TemplateRenderer {
         return html;
     }
 
-    private static String processForEach(String html, Map<String, Object> model) {
+    public static String processForEach(String html, Map<String, Object> model) {
         Pattern pattern = Pattern.compile("#foreach\\s*\\(\\s*([\\w]+)\\s*in\\s*([\\w.]+)\\s*\\)(.+?)#end",
                 Pattern.DOTALL);
         Matcher matcher = pattern.matcher(html);
@@ -33,7 +33,7 @@ public class TemplateRenderer {
                 for (Object item : items) {
                     Map<String, Object> itemModel = new java.util.HashMap<>(model);
                     itemModel.put(itemVar, item);
-                    loopResult.append(replaceVariablesInString(bodyTemplate, itemModel));
+                    loopResult.append(replaceVariables(bodyTemplate, itemModel));
                 }
             }
 
@@ -44,11 +44,7 @@ public class TemplateRenderer {
         return result.toString();
     }
 
-    private static String replaceVariables(String html, Map<String, Object> model) {
-        return replaceVariablesInString(html, model);
-    }
-
-    private static String replaceVariablesInString(String html, Map<String, Object> model) {
+    public static String replaceVariables(String html, Map<String, Object> model) {
         Pattern pattern = Pattern.compile("\\$\\{([^}]+)\\}");
         Matcher matcher = pattern.matcher(html);
         StringBuffer result = new StringBuffer();

@@ -101,8 +101,9 @@ public class StoreController {
     }
 
     private void addToCart(Context ctx, User user) {
-        String productName = ctx.formParam("product_name");
-        storeService.addToCart(user, productName);
+        String productIdStr = ctx.formParam("product_id");
+        int productId = Integer.parseInt(productIdStr);
+        storeService.addToCartByProductId(user, productId);
         ctx.redirect("/cart");
     }
 

@@ -54,11 +54,31 @@ public class ProductDAOImpl implements ProductDAO {
 
             if (rs.next()) {
                 return new Product(
+                        rs.getInt("id"),
                         rs.getString("name"),
                         rs.getDouble("price"));
             }
         } catch (SQLException e) {
             System.err.println("Error finding product: " + e.getMessage());
+        }
+        return null;
+    }
+
+    public Product findById(int id) {
+        String sql = "SELECT * FROM products WHERE id = ?";
+
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setInt(1, id);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                return new Product(
+                        rs.getInt("id"),
+                        rs.getString("name"),
+                        rs.getDouble("price"));
+            }
+        } catch (SQLException e) {
+            System.err.println("Error finding product by id: " + e.getMessage());
         }
         return null;
     }
@@ -73,6 +93,7 @@ public class ProductDAOImpl implements ProductDAO {
 
             while (rs.next()) {
                 products.add(new Product(
+                        rs.getInt("id"),
                         rs.getString("name"),
                         rs.getDouble("price")));
             }

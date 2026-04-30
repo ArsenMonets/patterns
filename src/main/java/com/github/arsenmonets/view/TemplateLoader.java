@@ -1,15 +1,22 @@
 package com.github.arsenmonets.view;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 public class TemplateLoader {
 
     public static String load(String templateName) {
         try {
-            String path = "src/main/resources/templates/" + templateName + ".html";
-            return new String(Files.readAllBytes(Paths.get(path)));
+            String resourcePath = "/templates/" + templateName + ".html";
+            InputStream inputStream = TemplateLoader.class.getResourceAsStream(resourcePath);
+
+            if (inputStream == null) {
+                return "<h1>Template not found: " + templateName + "</h1>";
+            }
+
+            byte[] bytes = inputStream.readAllBytes();
+            return new String(bytes, StandardCharsets.UTF_8);
         } catch (IOException e) {
             return "<h1>Template not found: " + templateName + "</h1>";
         }
