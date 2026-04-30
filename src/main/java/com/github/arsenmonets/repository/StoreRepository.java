@@ -13,12 +13,14 @@ public class StoreRepository {
     private final ProductDAO productDAO;
     private final OrderDAO orderDAO;
     private int orderCounter;
+    private int productCounter;
 
     public StoreRepository(UserDAO userDAO, ProductDAO productDAO, OrderDAO orderDAO) {
         this.userDAO = userDAO;
         this.productDAO = productDAO;
         this.orderDAO = orderDAO;
         this.orderCounter = 0;
+        this.productCounter = 0;
     }
 
     public List<Product> getProducts() {
@@ -55,6 +57,7 @@ public class StoreRepository {
     }
 
     public void addProduct(Product product) {
+        product.setId(++productCounter);
         productDAO.save(product);
     }
 
@@ -62,8 +65,8 @@ public class StoreRepository {
         productDAO.update(product);
     }
 
-    public void deleteProduct(String productName) {
-        productDAO.delete(productName);
+    public void deleteProduct(int productId) {
+        productDAO.delete(productId);
     }
 
     public Order getOrderById(int orderId) {

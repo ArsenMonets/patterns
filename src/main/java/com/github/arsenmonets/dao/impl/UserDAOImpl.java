@@ -26,7 +26,7 @@ public class UserDAOImpl implements UserDAO {
         try (Statement stmt = connection.createStatement()) {
             stmt.execute(sql);
         } catch (SQLException e) {
-            System.err.println("Error initializing users table: " + e.getMessage());
+            throw new RuntimeException("Error initializing users table: " + e.getMessage(), e);
         }
     }
 
@@ -41,8 +41,7 @@ public class UserDAOImpl implements UserDAO {
             pstmt.executeUpdate();
             return true;
         } catch (SQLException e) {
-            System.err.println("Error saving user: " + e.getMessage());
-            return false;
+            throw new RuntimeException("Error saving user: " + e.getMessage(), e);
         }
     }
 
@@ -61,7 +60,7 @@ public class UserDAOImpl implements UserDAO {
                         rs.getString("role"));
             }
         } catch (SQLException e) {
-            System.err.println("Error finding user: " + e.getMessage());
+            throw new RuntimeException("Error finding user: " + e.getMessage(), e);
         }
         return null;
     }
@@ -81,7 +80,7 @@ public class UserDAOImpl implements UserDAO {
                         rs.getString("role")));
             }
         } catch (SQLException e) {
-            System.err.println("Error retrieving users: " + e.getMessage());
+            throw new RuntimeException("Error retrieving users: " + e.getMessage(), e);
         }
         return users;
     }
@@ -97,8 +96,7 @@ public class UserDAOImpl implements UserDAO {
             pstmt.executeUpdate();
             return true;
         } catch (SQLException e) {
-            System.err.println("Error updating user: " + e.getMessage());
-            return false;
+            throw new RuntimeException("Error updating user: " + e.getMessage(), e);
         }
     }
 
@@ -111,8 +109,7 @@ public class UserDAOImpl implements UserDAO {
             pstmt.executeUpdate();
             return true;
         } catch (SQLException e) {
-            System.err.println("Error deleting user: " + e.getMessage());
-            return false;
+            throw new RuntimeException("Error deleting user: " + e.getMessage(), e);
         }
     }
 }

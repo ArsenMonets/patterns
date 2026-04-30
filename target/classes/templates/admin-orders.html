@@ -49,7 +49,7 @@
                 <td>${order.status}</td>
                 <td>${order.productCount} product(s)</td>
                 <td>
-                    <form method="post" action="/confirm-order" style="display:inline">
+                    <form method="post" action="/admin/confirm-order" style="display:inline">
                         <input type="hidden" name="order_id" value="${order.id}">
                         <button type="submit" class="btn">Confirm</button>
                     </form>

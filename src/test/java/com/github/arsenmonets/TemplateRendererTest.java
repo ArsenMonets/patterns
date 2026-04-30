@@ -395,4 +395,90 @@ class TemplateRendererTest {
         assertNotNull(result);
         assertTrue(result.contains("Pending Orders"));
     }
+
+    @Test
+    @DisplayName("Should support ternary operator with true condition")
+    void testTernaryOperatorTrue() {
+        model.put("status", "CONFIRMED");
+
+        String html = "${status == \"CONFIRMED\" ? \"Order Confirmed\" : \"Order Pending\"}";
+        String result = TemplateRenderer.replaceVariables(html, model);
+
+        assertEquals("Order Confirmed", result);
+    }
+
+    @Test
+    @DisplayName("Should support ternary operator with false condition")
+    void testTernaryOperatorFalse() {
+        model.put("status", "PENDING");
+
+        String html = "${status == \"CONFIRMED\" ? \"Order Confirmed\" : \"Order Pending\"}";
+        String result = TemplateRenderer.replaceVariables(html, model);
+
+        assertEquals("Order Pending", result);
+    }
+
+    @Test
+    @DisplayName("Should support ternary operator with variable replacement in values")
+    void testTernaryOperatorWithVariables() {
+        model.put("quantity", 5);
+        model.put("available", true);
+
+        String html = "${available ? \"Available (\" + quantity + \")\" : \"Not Available\"}";
+        String result = TemplateRenderer.replaceVariables(html, model);
+
+        assertNotNull(result);
+    }
+
+    @Test
+    @DisplayName("Should support ternary operator with numeric comparison")
+    void testTernaryOperatorNumericComparison() {
+        model.put("price", 99.99);
+
+        String html = "${price == 99.99 ? \"On Sale\" : \"Regular Price\"}";
+        String result = TemplateRenderer.replaceVariables(html, model);
+
+        assertEquals("On Sale", result);
+    }
+
+    @Test
+    @DisplayName("Should support ternary operator with inequality")
+    void testTernaryOperatorInequality() {
+        model.put("status", "SHIPPED");
+
+        String html = "${status != \"PENDING\" ? \"Processing\" : \"Waiting\"}";
+        String result = TemplateRenderer.replaceVariables(html, model);
+
+        assertEquals("Processing", result);
+    }
+
+    @Test
+    @DisplayName("Should support nested ternary operators")
+    void testNestedTernaryOperator() {
+        model.put("status", "CONFIRMED");
+        model.put("isPaid", true);
+
+        String html = "${isPaid == true ? \"Paid - " +
+                "${status == \"CONFIRMED\" ? \"Ready\" : \"Processing\"}\" : \"Unpaid\"}";
+        String result = TemplateRenderer.replaceVariables(html, model);
+
+        assertNotNull(result);
+    }
+
+    @Test
+    @DisplayName("Should support ternary operator in foreach loop")
+    void testTernaryOperatorInForeach() {
+        List<Order> orders = new ArrayList<>();
+        orders.add(new Order(1, "alice", new ArrayList<>(), "CONFIRMED"));
+        orders.add(new Order(2, "bob", new ArrayList<>(), "PENDING"));
+        model.put("orders", orders);
+
+        String html = "#foreach(order in orders)<p>${order.status == \"CONFIRMED\" ? \"✓\" : \"○\"}</p>#end";
+        String result = TemplateRenderer.processForEach(html, model);
+        result = TemplateRenderer.replaceVariables(result, model);
+
+        assertNotNull(result);
+        assertTrue(result.contains("✓"));
+        assertTrue(result.contains("○"));
+    }
 }

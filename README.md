@@ -126,6 +126,18 @@ public class UserDAOImpl implements UserDAO {
 - **Purpose**: Defines skeleton of template rendering process; concrete steps can be redefined by subclasses or methods
 - **Implementation**: `render()` method defines steps: load template → process foreach loops → replace variables
 - **Benefits**: Reusable rendering pipeline, consistent template processing
+- **Key Methods**:
+  - `render(String template, Map<String, Object> model)` - Main template method orchestrating the rendering pipeline
+  - `processForEach(String html, Map<String, Object> model)` - Concrete step: expands `#foreach(item in collection)...#end` loops
+  - `replaceVariables(String html, Map<String, Object> model)` - Concrete step: replaces `${variable}` and `${object.property}` expressions
+  - `evaluateExpression(String expr, Map<String, Object> model)` - Supports ternary operators: `${condition ? value1 : value2}`
+  - `getNestedValue(String path, Map<String, Object> model)` - Retrieves nested properties via reflection
+- **Template Features**:
+  - Variable binding: `${username}` → replaced with map value
+  - Nested properties: `${user.name}` → calls `user.getName()`
+  - Collection loops: `#foreach(item in items)...#end` → iterates with local binding
+  - Ternary operators: `${count > 0 ? "has items" : "empty"}` → conditional rendering
+  - Truthy evaluation: null=false, Number!=0, String!empty, Collection!empty
 
 ```java
 public class TemplateRenderer {
@@ -544,9 +556,10 @@ classDiagram
     class TemplateRenderer {
         <<utility>>
         +render(String, Map) String
-        -processForEach(String, Map) String
-        -replaceVariables(String, Map) String
+        +processForEach(String, Map) String
+        +replaceVariables(String, Map) String
         -getNestedValue(String, Map) Object
+        -evaluateExpression() String
     }
     
     class TemplateLoader {
@@ -965,6 +978,55 @@ Tests business logic with mocked repositories:
 - `testAddProductWithNegativePrice` - Price validation
 - `testAddProductWithEmptyName` - Name validation
 
+#### TemplateRendererTest.java (36 tests)
+Tests template rendering engine with mocked data:
+
+**Variable Replacement Tests:**
+- `testRenderSimpleVariable` - Single variable substitution
+- `testRenderMultipleVariables` - Multiple variables in template
+- `testRenderVariableNotInModel` - Missing variable handling
+- `testRenderEmptyTemplate` - Empty template rendering
+
+**Nested Property Access Tests:**
+- `testRenderNestedProperty` - Object property access via reflection
+- `testRenderChainedProperties` - Multi-level nested access
+- `testRenderNestedPropertyWithNull` - Null safety for nested properties
+
+**Collection Loop Tests:**
+- `testForeachWithSimpleList` - Basic loop iteration
+- `testForeachWithNestedProperties` - Access properties in loop items
+- `testForeachWithEmptyList` - Empty collection handling
+- `testForeachWithMultipleLoops` - Multiple loops in same template
+- `testForeachWithNestedLoops` - Nested loop structures
+
+**Ternary Operator Tests:**
+- `testTernaryWithEqualsOperator` - Equality condition `${x == 5 ? "yes" : "no"}`
+- `testTernaryWithNotEqualsOperator` - Inequality condition `${x != 0 ? "diff" : "same"}`
+- `testTernaryWithStringComparison` - String value comparison
+- `testTernaryWithTruthyValue` - Truthy evaluation on numbers/strings
+- `testTernaryWithNullValue` - Null handling in ternary
+- `testTernaryWithCollectionSize` - Empty collection detection
+- `testTernaryWithNestedExpression` - Complex ternary expressions
+
+**Real Template Tests:**
+- `testRenderCompleteShopTemplate` - Full shop.html rendering
+- `testRenderCompleteCartTemplate` - Full cart.html with items
+- `testRenderCompleteOrderTemplate` - Full order display
+- `testRenderTemplateWithMixedFeatures` - Variables, loops, ternary operators combined
+
+**HTML Structure Tests:**
+- `testPreserveHtmlStructure` - HTML tags remain intact
+- `testPreserveIndentation` - Template indentation preserved
+- `testPreserveWhitespace` - Whitespace handling
+
+**Edge Cases:**
+- `testSpecialCharactersInVariables` - Unicode and special chars
+- `testVariableNameWithUnderscore` - Underscore in variable names
+- `testTemplateWithComments` - HTML comments preserved
+- `testEmptyModel` - Rendering with empty model map
+- `testNullModel` - Null model handling
+- `testLargeDataSet` - Performance with large collections
+
 ### Integration Tests (46 test cases)
 
 #### AuthServiceIntegrationTest.java (11 tests)
@@ -978,8 +1040,15 @@ Tests with real H2 database and UserDAOImpl:
 - `testRegistrationFailsWithDuplicateUsername` - Unique constraint
 - `testPasswordVerificationWithRealData` - Real password verification
 
-#### StoreServiceIntegrationTest.java (35 tests)
+#### StoreServiceIntegrationTest.java (28 tests)
 Tests with real H2 database and all DAOs:
+
+**Test Setup (BeforeEach):**
+- Initializes ProductDAO, OrderDAO, UserDAO
+- Clears database state by deleting existing orders first (respecting foreign key constraints)
+- Then deletes existing products
+- Finally creates clean test data (4 products: Laptop, Mouse, Keyboard, Monitor)
+- Ensures proper cleanup order: Orders → Products → Fresh data
 
 **Shopping Workflow Tests:**
 - `testCompleteShoppingWorkflow` - Browse → Add → Checkout

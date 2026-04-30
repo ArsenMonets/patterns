@@ -34,7 +34,7 @@ public class OrderDAOImpl implements OrderDAO {
             stmt.execute(ordersSql);
             stmt.execute(orderItemsSql);
         } catch (SQLException e) {
-            System.err.println("Error initializing orders tables: " + e.getMessage());
+            throw new RuntimeException("Error initializing orders tables: " + e.getMessage(), e);
         }
     }
 
@@ -51,8 +51,7 @@ public class OrderDAOImpl implements OrderDAO {
             saveOrderItems(order);
             return true;
         } catch (SQLException e) {
-            System.err.println("Error saving order: " + e.getMessage());
-            return false;
+            throw new RuntimeException("Error saving order: " + e.getMessage(), e);
         }
     }
 
@@ -66,7 +65,7 @@ public class OrderDAOImpl implements OrderDAO {
                 pstmt.executeUpdate();
             }
         } catch (SQLException e) {
-            System.err.println("Error saving order items: " + e.getMessage());
+            throw new RuntimeException("Error saving order items: " + e.getMessage(), e);
         }
     }
 
@@ -87,7 +86,7 @@ public class OrderDAOImpl implements OrderDAO {
                         rs.getString("status"));
             }
         } catch (SQLException e) {
-            System.err.println("Error finding order: " + e.getMessage());
+            throw new RuntimeException("Error finding order: " + e.getMessage(), e);
         }
         return null;
     }
@@ -110,7 +109,7 @@ public class OrderDAOImpl implements OrderDAO {
                         rs.getString("status")));
             }
         } catch (SQLException e) {
-            System.err.println("Error retrieving orders: " + e.getMessage());
+            throw new RuntimeException("Error retrieving orders: " + e.getMessage(), e);
         }
         return orders;
     }
@@ -134,7 +133,7 @@ public class OrderDAOImpl implements OrderDAO {
                         rs.getString("status")));
             }
         } catch (SQLException e) {
-            System.err.println("Error retrieving orders by customer: " + e.getMessage());
+            throw new RuntimeException("Error retrieving orders by customer: " + e.getMessage(), e);
         }
         return orders;
     }
@@ -150,8 +149,7 @@ public class OrderDAOImpl implements OrderDAO {
             pstmt.executeUpdate();
             return true;
         } catch (SQLException e) {
-            System.err.println("Error updating order: " + e.getMessage());
-            return false;
+            throw new RuntimeException("Error updating order: " + e.getMessage(), e);
         }
     }
 
@@ -170,8 +168,7 @@ public class OrderDAOImpl implements OrderDAO {
             pstmt2.executeUpdate();
             return true;
         } catch (SQLException e) {
-            System.err.println("Error deleting order: " + e.getMessage());
-            return false;
+            throw new RuntimeException("Error deleting order: " + e.getMessage(), e);
         }
     }
 
@@ -192,7 +189,7 @@ public class OrderDAOImpl implements OrderDAO {
                         rs.getDouble("price")));
             }
         } catch (SQLException e) {
-            System.err.println("Error retrieving order items: " + e.getMessage());
+            throw new RuntimeException("Error retrieving order items: " + e.getMessage(), e);
         }
         return products;
     }

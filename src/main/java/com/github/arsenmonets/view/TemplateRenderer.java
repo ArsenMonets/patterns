@@ -50,14 +50,112 @@ public class TemplateRenderer {
         StringBuffer result = new StringBuffer();
 
         while (matcher.find()) {
-            String variable = matcher.group(1);
-            Object value = getNestedValue(variable, model);
-            String replacement = value != null ? Matcher.quoteReplacement(value.toString()) : "";
-            matcher.appendReplacement(result, replacement);
+            String expression = matcher.group(1);
+            String replacement = evaluateExpression(expression, model);
+            matcher.appendReplacement(result, Matcher.quoteReplacement(replacement));
         }
 
         matcher.appendTail(result);
         return result.toString();
+    }
+
+    private static String evaluateExpression(String expression, Map<String, Object> model) {
+        int questionMarkIdx = expression.indexOf('?');
+        if (questionMarkIdx > 0) {
+            int colonIdx = expression.indexOf(':', questionMarkIdx);
+            if (colonIdx > questionMarkIdx) {
+                String condition = expression.substring(0, questionMarkIdx).trim();
+                String trueValue = expression.substring(questionMarkIdx + 1, colonIdx).trim();
+                String falseValue = expression.substring(colonIdx + 1).trim();
+
+                if (evaluateCondition(condition, model)) {
+                    return processValue(trueValue, model);
+                } else {
+                    return processValue(falseValue, model);
+                }
+            }
+        }
+
+        Object value = getNestedValue(expression, model);
+        return value != null ? value.toString() : "";
+    }
+
+    private static String processValue(String value, Map<String, Object> model) {
+        value = value.trim();
+
+        if ((value.startsWith("\"") && value.endsWith("\"")) ||
+                (value.startsWith("'") && value.endsWith("'"))) {
+            return value.substring(1, value.length() - 1);
+        }
+
+        Object objValue = getNestedValue(value, model);
+        return objValue != null ? objValue.toString() : value;
+    }
+
+    private static boolean evaluateCondition(String condition, Map<String, Object> model) {
+        condition = condition.trim();
+
+        if (condition.contains("==")) {
+            String[] parts = condition.split("==", 2);
+            String left = parts[0].trim();
+            String right = parts[1].trim();
+
+            Object leftValue = getNestedValue(left, model);
+            Object rightValue = parseValue(right);
+
+            if (leftValue == null)
+                return rightValue == null;
+            return leftValue.equals(rightValue);
+        }
+
+        if (condition.contains("!=")) {
+            String[] parts = condition.split("!=", 2);
+            String left = parts[0].trim();
+            String right = parts[1].trim();
+
+            Object leftValue = getNestedValue(left, model);
+            Object rightValue = parseValue(right);
+
+            if (leftValue == null)
+                return rightValue != null;
+            return !leftValue.equals(rightValue);
+        }
+
+        Object value = getNestedValue(condition, model);
+        return isTruthy(value);
+    }
+
+    private static Object parseValue(String value) {
+        value = value.trim();
+
+        if ((value.startsWith("\"") && value.endsWith("\"")) ||
+                (value.startsWith("'") && value.endsWith("'"))) {
+            return value.substring(1, value.length() - 1);
+        }
+
+        try {
+            if (value.contains(".")) {
+                return Double.parseDouble(value);
+            } else {
+                return Integer.parseInt(value);
+            }
+        } catch (NumberFormatException e) {
+            return value;
+        }
+    }
+
+    private static boolean isTruthy(Object value) {
+        if (value == null)
+            return false;
+        if (value instanceof Boolean)
+            return (Boolean) value;
+        if (value instanceof Number)
+            return ((Number) value).doubleValue() != 0;
+        if (value instanceof String)
+            return !((String) value).isEmpty();
+        if (value instanceof Collection)
+            return !((Collection<?>) value).isEmpty();
+        return true;
     }
 
     private static Object getNestedValue(String path, Map<String, Object> model) {

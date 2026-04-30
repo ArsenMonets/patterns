@@ -33,23 +33,23 @@ public class StoreServiceIntegrationTest {
         orderDAO = new OrderDAOImpl();
         userDAO = new UserDAOImpl();
 
-        List<Product> existingProducts = productDAO.findAll();
-        for (Product p : existingProducts) {
-            productDAO.delete(p.getName());
-        }
-
         List<Order> existingOrders = orderDAO.findAll();
         for (Order o : existingOrders) {
             orderDAO.delete(o.getId());
         }
 
+        List<Product> existingProducts = productDAO.findAll();
+        for (Product p : existingProducts) {
+            productDAO.delete(p.getId());
+        }
+
         storeRepository = new StoreRepository(userDAO, productDAO, orderDAO);
         storeService = new StoreService(storeRepository);
 
-        productDAO.save(new Product("Laptop", 999.99));
-        productDAO.save(new Product("Mouse", 29.99));
-        productDAO.save(new Product("Keyboard", 79.99));
-        productDAO.save(new Product("Monitor", 299.99));
+        storeRepository.addProduct(new Product("Laptop", 999.99));
+        storeRepository.addProduct(new Product("Mouse", 29.99));
+        storeRepository.addProduct(new Product("Keyboard", 79.99));
+        storeRepository.addProduct(new Product("Monitor", 299.99));
     }
 
     @Test
@@ -332,9 +332,11 @@ public class StoreServiceIntegrationTest {
     public void testSellerDeleteProduct() {
         User seller = new User("seller1", "hashedpass", "Seller");
 
-        storeService.sellerDeleteProduct(seller, "Mouse");
-
         Product product = storeService.findProductByName("Mouse");
+
+        storeService.sellerDeleteProduct(seller, product.getId());
+
+        product = storeService.findProductByName("Mouse");
         assertNull(product);
     }
 
@@ -343,7 +345,9 @@ public class StoreServiceIntegrationTest {
         User seller = new User("seller1", "hashedpass", "Seller");
         List<Product> beforeDelete = storeService.browseProducts();
 
-        storeService.sellerDeleteProduct(seller, "Keyboard");
+        Product product = storeService.findProductByName("Mouse");
+
+        storeService.sellerDeleteProduct(seller, product.getId());
 
         List<Product> afterDelete = storeService.browseProducts();
         assertEquals(beforeDelete.size() - 1, afterDelete.size());

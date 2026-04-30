@@ -141,9 +141,9 @@ public class StoreService {
         }
     }
 
-    public void sellerDeleteProduct(User user, String productName) {
+    public void sellerDeleteProduct(User user, int productId) {
         if (user != null && "Seller".equals(user.getRole())) {
-            storeRepository.deleteProduct(productName);
+            storeRepository.deleteProduct(productId);
         } else {
             throw new IllegalAccessError("Only sellers can delete products");
         }

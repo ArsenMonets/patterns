@@ -159,8 +159,8 @@ public class StoreController {
     }
 
     private void deleteProduct(Context ctx, User user) {
-        String productName = ctx.formParam("product_name");
-        storeService.sellerDeleteProduct(user, productName);
+        int productId = Integer.parseInt(ctx.formParam("product_id"));
+        storeService.sellerDeleteProduct(user, productId);
         ctx.redirect("/admin/products?success=true");
     }
 

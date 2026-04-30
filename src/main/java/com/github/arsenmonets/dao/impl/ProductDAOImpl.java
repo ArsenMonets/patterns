@@ -19,13 +19,13 @@ public class ProductDAOImpl implements ProductDAO {
     private void initializeTable() {
         String sql = "CREATE TABLE IF NOT EXISTS products (" +
                 "id INT AUTO_INCREMENT PRIMARY KEY, " +
-                "name VARCHAR(100) UNIQUE NOT NULL, " +
+                "name VARCHAR(100) NOT NULL, " +
                 "price DOUBLE NOT NULL)";
 
         try (Statement stmt = connection.createStatement()) {
             stmt.execute(sql);
         } catch (SQLException e) {
-            System.err.println("Error initializing products table: " + e.getMessage());
+            throw new RuntimeException("Error initializing products table: " + e.getMessage(), e);
         }
     }
 
@@ -39,8 +39,7 @@ public class ProductDAOImpl implements ProductDAO {
             pstmt.executeUpdate();
             return true;
         } catch (SQLException e) {
-            System.err.println("Error saving product: " + e.getMessage());
-            return false;
+            throw new RuntimeException("Error saving product: " + e.getMessage(), e);
         }
     }
 
@@ -59,7 +58,7 @@ public class ProductDAOImpl implements ProductDAO {
                         rs.getDouble("price"));
             }
         } catch (SQLException e) {
-            System.err.println("Error finding product: " + e.getMessage());
+            throw new RuntimeException("Error finding product: " + e.getMessage(), e);
         }
         return null;
     }
@@ -78,7 +77,7 @@ public class ProductDAOImpl implements ProductDAO {
                         rs.getDouble("price"));
             }
         } catch (SQLException e) {
-            System.err.println("Error finding product by id: " + e.getMessage());
+            throw new RuntimeException("Error finding product by id: " + e.getMessage(), e);
         }
         return null;
     }
@@ -98,7 +97,7 @@ public class ProductDAOImpl implements ProductDAO {
                         rs.getDouble("price")));
             }
         } catch (SQLException e) {
-            System.err.println("Error retrieving products: " + e.getMessage());
+            throw new RuntimeException("Error retrieving products: " + e.getMessage(), e);
         }
         return products;
     }
@@ -113,22 +112,20 @@ public class ProductDAOImpl implements ProductDAO {
             pstmt.executeUpdate();
             return true;
         } catch (SQLException e) {
-            System.err.println("Error updating product: " + e.getMessage());
-            return false;
+            throw new RuntimeException("Error updating product: " + e.getMessage(), e);
         }
     }
 
     @Override
-    public boolean delete(String name) {
-        String sql = "DELETE FROM products WHERE name = ?";
+    public boolean delete(int id) {
+        String sql = "DELETE FROM products WHERE id = ?";
 
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-            pstmt.setString(1, name);
+            pstmt.setInt(1, id);
             pstmt.executeUpdate();
             return true;
         } catch (SQLException e) {
-            System.err.println("Error deleting product: " + e.getMessage());
-            return false;
+            throw new RuntimeException("Error deleting product: " + e.getMessage(), e);
         }
     }
 }

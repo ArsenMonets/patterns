@@ -225,13 +225,13 @@ public class StoreServiceTest {
 
     @Test
     public void testSellerDeleteProductWithNullUser() {
-        assertThrows(IllegalAccessError.class, () -> storeService.sellerDeleteProduct(null, "Laptop"));
+        assertThrows(IllegalAccessError.class, () -> storeService.sellerDeleteProduct(null, 1));
     }
 
     @Test
     public void testSellerDeleteProductWithCustomerUser() {
         User customer = new User("customer", "hashedpass", "Customer");
-        assertThrows(IllegalAccessError.class, () -> storeService.sellerDeleteProduct(customer, "Laptop"));
+        assertThrows(IllegalAccessError.class, () -> storeService.sellerDeleteProduct(customer, 1));
     }
 
     @Test
