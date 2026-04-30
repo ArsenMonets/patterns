@@ -53,7 +53,8 @@ src/
     ├── AuthServiceTest.java (Unit tests)
     ├── StoreServiceTest.java (Unit tests)
     ├── AuthServiceIntegrationTest.java (Integration tests)
-    └── StoreServiceIntegrationTest.java (Integration tests)
+    ├── StoreServiceIntegrationTest.java (Integration tests)
+    └── TempateRenderTest.java (Unit tests)
 ```
 
 ## Architecture Overview
